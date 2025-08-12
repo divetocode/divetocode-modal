@@ -1,0 +1,53 @@
+{
+  "name": "@divetocode/modal",
+  "version": "1.0.0",
+  "description": "A lightweight modal dialog system for React/Next.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "toast",
+    "react",
+    "nextjs",
+    "notification",
+    "divetocode"
+  ],
+  "author": {
+    "name": "divetocode",
+    "email": "divetocode.official@gmail.com",
+    "url": "https://divetocode.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/divetocode/divetocode-modal"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.0.0"
+  }
+}
