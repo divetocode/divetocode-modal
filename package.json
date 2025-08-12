@@ -1,6 +1,6 @@
 {
   "name": "@divetocode/modal",
-  "version": "1.0.0",
+  "version": "1.0.8",
   "description": "A lightweight modal dialog system for React/Next.js",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -9,12 +9,11 @@
     ".": {
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
-    }
+    },
+    "./styles.css": "./dist/index.css"
   },
-  "files": [
-    "dist"
-  ],
-  "sideEffects": false,
+  "sideEffects": ["**/*.css"],
+  "files": ["dist"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

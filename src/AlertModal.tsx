@@ -1,6 +1,7 @@
+// src/AlertModal.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, CSSProperties } from "react";
 import ConfirmButton from "./_Conponents/ConfirmButton";
 
 type AlertModalProps = {
@@ -12,40 +13,89 @@ type AlertModalProps = {
   alarmText?: string;
 };
 
-export default function AlertModal({ isOpen, message, onClose, confirmText, alarmText  }: AlertModalProps) {
+export default function AlertModal({
+  isOpen,
+  message,
+  onClose,
+  confirmText,
+  alarmText,
+}: AlertModalProps) {
   const [show, setShow] = useState(false);
 
-  // 트랜지션용 상태 제어
+  // Control mount/unmount for transition
   useEffect(() => {
-    let timer;
+    let timer: ReturnType<typeof setTimeout> | undefined;
     if (isOpen) {
       setShow(true);
     } else {
-      timer = setTimeout(() => setShow(false), 300); // 트랜지션 후 제거
+      timer = setTimeout(() => setShow(false), 300); // remove after transition
     }
-    return () => clearTimeout(timer);
+    return () => timer && clearTimeout(timer);
   }, [isOpen]);
 
   if (!isOpen && !show) return null;
 
   return (
     <div
-      className={`fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300 ${
-        isOpen ? "opacity-100" : "opacity-0"
-      }`}
-      onClick={onClose} // 배경 클릭 시 닫기
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.4)",
+        backdropFilter: "blur(4px)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 50,
+        opacity: isOpen ? 1 : 0,
+        transition: "opacity 300ms ease",
+      }}
+      onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`bg-white rounded-xl shadow-xl w-full max-w-md p-8 text-center space-y-6 transform transition-all duration-300
-        ${isOpen ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
+        style={{
+          background: "#fff",
+          borderRadius: "12px",
+          boxShadow:
+            "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+          width: "100%",
+          maxWidth: "28rem",
+          padding: "2rem",
+          textAlign: "center",
+          transform: isOpen ? "translateY(0)" : "translateY(2.5rem)",
+          opacity: isOpen ? 1 : 0,
+          transition: "transform 300ms ease, opacity 300ms ease",
+        }}
       >
-        <h2 className="text-xl font-bold text-gray-800">❗ {alarmText || "Alarm"}</h2>
-        <p className="text-gray-700 text-base">{message}</p>
+        <h2
+          style={{
+            fontSize: "1.25rem",
+            lineHeight: "1.75rem",
+            fontWeight: 700,
+            color: "#1f2937",
+            margin: 0,
+          }}
+        >
+          ❗ {alarmText || "Alarm"}
+        </h2>
 
-        <ConfirmButton onClick={onClose}>
-          {confirmText || "Confirm"}
-        </ConfirmButton>
+        <p
+          style={{
+            fontSize: "1rem",
+            lineHeight: "1.5rem",
+            color: "#374151",
+            marginTop: "1.5rem",
+            marginBottom: 0,
+          }}
+        >
+          {message}
+        </p>
+
+        <div style={{ marginTop: "1.5rem" }}>
+          <ConfirmButton onClick={onClose}>
+            {confirmText || "Confirm"}
+          </ConfirmButton>
+        </div>
       </div>
     </div>
   );

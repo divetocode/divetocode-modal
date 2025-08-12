@@ -1,7 +1,7 @@
 // src/ConfirmModal.tsx
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, CSSProperties } from "react";
 
 type ConfirmModalProps = {
   isOpen: boolean;
@@ -9,10 +9,10 @@ type ConfirmModalProps = {
   onYes: () => void;
   onNo: () => void;
 
-  title?: string;             // Top title (e.g., "Are you sure?")
-  yesText?: string;           // Label for the "Yes" button (default: "Yes")
-  noText?: string;            // Label for the "No" button (default: "No")
-  closeOnBackdrop?: boolean;  // Whether clicking the backdrop closes the modal (default: true)
+  title?: string;
+  yesText?: string;
+  noText?: string;
+  closeOnBackdrop?: boolean;
 };
 
 export default function ConfirmModal({
@@ -30,18 +30,18 @@ export default function ConfirmModal({
   const descId = useId();
   const yesBtnRef = useRef<HTMLButtonElement | null>(null);
 
-  // Handle mount/unmount transition state
+  // Mount/unmount transition
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
     if (isOpen) {
       setShow(true);
     } else {
-      timer = setTimeout(() => setShow(false), 300); // Wait for transition before unmount
+      timer = setTimeout(() => setShow(false), 300);
     }
     return () => timer && clearTimeout(timer);
   }, [isOpen]);
 
-  // Focus the "Yes" button when the modal opens
+  // Focus "Yes" button on open
   useEffect(() => {
     if (isOpen) {
       const t = setTimeout(() => yesBtnRef.current?.focus(), 50);
@@ -49,7 +49,7 @@ export default function ConfirmModal({
     }
   }, [isOpen]);
 
-  // Close modal with ESC key (equivalent to clicking "No")
+  // ESC key closes modal (triggers onNo)
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -64,50 +64,117 @@ export default function ConfirmModal({
 
   if (!isOpen && !show) return null;
 
-  // Handle backdrop click
   const handleBackdropClick = () => {
     if (closeOnBackdrop) onNo();
   };
 
+  // === 스타일 객체 ===
+  const overlayStyle: CSSProperties = {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(0, 0, 0, 0.4)",
+    backdropFilter: "blur(4px)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 50,
+    opacity: isOpen ? 1 : 0,
+    transition: "opacity 300ms ease",
+  };
+
+  const contentStyle: CSSProperties = {
+    background: "#ffffff",
+    borderRadius: "12px",
+    boxShadow:
+      "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    width: "100%",
+    maxWidth: "28rem",
+    padding: "2rem",
+    textAlign: "center",
+    transform: isOpen ? "translateY(0)" : "translateY(2.5rem)",
+    opacity: isOpen ? 1 : 0,
+    transition: "transform 300ms ease, opacity 300ms ease",
+  };
+
+  const titleStyle: CSSProperties = {
+    fontSize: "1.25rem",
+    lineHeight: "1.75rem",
+    fontWeight: 700,
+    color: "#1f2937",
+    margin: 0,
+  };
+
+  const messageStyle: CSSProperties = {
+    fontSize: "1rem",
+    lineHeight: "1.5rem",
+    color: "#374151",
+    marginTop: "1.5rem",
+    marginBottom: 0,
+  };
+
+  const actionsStyle: CSSProperties = {
+    marginTop: "1rem",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "0.75rem",
+  };
+
+  const baseBtnStyle: CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "0.5rem",
+    padding: "0.5rem 1rem",
+    fontSize: "1rem",
+    fontWeight: 500,
+    cursor: "pointer",
+    transition: "background 150ms ease, border-color 150ms ease, color 150ms ease",
+    outline: "none",
+  };
+
+  const yesBtnStyle: CSSProperties = {
+    ...baseBtnStyle,
+    color: "#fff",
+    background: "#2563eb",
+    border: "none",
+  };
+
+  const noBtnStyle: CSSProperties = {
+    ...baseBtnStyle,
+    color: "#374151",
+    background: "#fff",
+    border: "1px solid #d1d5db",
+  };
+
   return (
     <div
-      className={`fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300 ${
-        isOpen ? "opacity-100" : "opacity-0"
-      }`}
+      style={overlayStyle}
       onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
       aria-describedby={descId}
     >
-      <div
-        onClick={(e) => e.stopPropagation()} // Prevent backdrop close on modal click
-        className={`bg-white rounded-xl shadow-xl w-full max-w-md p-8 text-center space-y-6 transform transition-all duration-300 ${
-          isOpen ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-        }`}
-      >
-        <h2 id={titleId} className="text-xl font-bold text-gray-800">
+      <div onClick={(e) => e.stopPropagation()} style={contentStyle}>
+        <h2 id={titleId} style={titleStyle}>
           {title}
         </h2>
 
-        <p id={descId} className="text-gray-700 text-base">
+        <p id={descId} style={messageStyle}>
           {message}
         </p>
 
-        <div className="mt-4 flex items-center justify-center gap-3">
+        <div style={actionsStyle}>
           <button
             ref={yesBtnRef}
             type="button"
             onClick={onYes}
-            className="inline-flex items-center justify-center rounded-lg px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            style={yesBtnStyle}
           >
             {yesText}
           </button>
-          <button
-            type="button"
-            onClick={onNo}
-            className="inline-flex items-center justify-center rounded-lg px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300"
-          >
+          <button type="button" onClick={onNo} style={noBtnStyle}>
             {noText}
           </button>
         </div>
